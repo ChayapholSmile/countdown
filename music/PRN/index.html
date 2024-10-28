@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown to Song Upload</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan&family=Quicksand&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kodchasan', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+            color: #333;
+            text-align: center;
+            margin: 0;
+        }
+        #countdown {
+            font-size: 2em;
+        }
+        #timer {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+            font-size: 2em;
+            text-align: center;
+            background-color: #eee;
+            border-radius: 10px;
+            padding: 10px 0;
+        }
+        .time-label {
+            font-size: 0.5em;
+            font-family: 'Kodchasan', sans-serif;
+        }
+        .time-value {
+            font-family: 'Quicksand', sans-serif;
+            position: relative;
+            display: inline-block;
+        }
+        .flip {
+            animation: flipDown 0.5s ease forwards;
+        }
+
+        @keyframes flipDown {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { transform: translateY(10%); opacity: 0.8; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="countdown">
+        <p>เพลง 'ปลื้มรักนิ่ม' กำลังจะออกใน</p>
+        <div id="timer">
+            <div class="time-box">
+                <span id="days" class="time-value">0</span>
+                <div class="time-label">วัน</div>
+            </div>
+            <div class="time-box">
+                <span id="hours" class="time-value">0</span>
+                <div class="time-label">ชม.</div>
+            </div>
+            <div class="time-box">
+                <span id="minutes" class="time-value">0</span>
+                <div class="time-label">นาที</div>
+            </div>
+            <div class="time-box">
+                <span id="seconds" class="time-value">0</span>
+                <div class="time-label">วินาที</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadDate = new Date("2024-12-01T00:00:00+13:00").getTime();
+
+        const timerElements = {
+            days: document.getElementById("days"),
+            hours: document.getElementById("hours"),
+            minutes: document.getElementById("minutes"),
+            seconds: document.getElementById("seconds"),
+        };
+
+        let previousValues = {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+        };
+
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            const distance = uploadDate - now;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdown").innerHTML = "เพลงอัปโหลดแล้ว!";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const values = { days, hours, minutes, seconds };
+
+            Object.keys(values).forEach(unit => {
+                if (values[unit] !== previousValues[unit]) {
+                    timerElements[unit].textContent = values[unit];
+                    timerElements[unit].classList.add("flip");
+                    previousValues[unit] = values[unit];
+                    setTimeout(() => timerElements[unit].classList.remove("flip"), 500);
+                }
+            });
+        };
+
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
